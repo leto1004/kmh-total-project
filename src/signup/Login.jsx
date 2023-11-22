@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import imgLogo from "../images/tier_logo.png";
 import AxiosApi from "../api/AxiosApi";
+import { Input, Button, Container, Items } from "../component/LoginComponent";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -52,14 +54,42 @@ const Login = () => {
       // 내부 저장소에 로그인 성공 시 로그인 상태 저장
       window.localStorage.setItem('email', inputEmail);
       window.localStorage.setItem('isLogin', "TRUE");
+      navigate('/home');
     }
   }
   return (
-    <>
-      <input type="text" placeholder="이메일" value={inputEmail} onChange={onChangeEmail} /><br />
-      <input type="password" placeholder="비밀번호" value={inputPw} onChange={onChangePw} /><br />
-      {isEmail && isPw ? (<button onClick={onClickLogin}>로그인</button>): (<button disabled>로그인</button>)}
-    </>
+    <Container>
+      <Items className="item1">
+        <img src={imgLogo} alt="logo"/>
+      </Items>
+      <Items className="item2">
+        <Input placeholder="이메일" value={inputEmail} onChange={onChangeEmail} />
+      </Items>
+      <Items className="hint">
+        {inputEmail.length > 0 && (
+          <span className={`${isEmail ? 'success' : 'error'}`}>{emailMsg}</span>
+        )}
+      </Items>
+      <Items className="item2">
+        <Input type="password" placeholder="비밀번호" value={inputPw} onChange={onChangePw} />
+      </Items>
+      <Items className="hint">
+        {inputPw.length > 0 && (
+          <span className={`${isPw ? 'success' : 'error'}`}>{pwMsg}</span>
+        )}
+      </Items>
+      <Items className="item2">
+        {isEmail && isPw ? (<Button enabled onClick={onClickLogin}>로그인</Button>): (<Button disabled>로그인</Button>)}
+      </Items>
+      <Items className="signup">
+        <Link to='/signup' className="link_style">
+          <span>Sign Up</span>
+        </Link>
+      </Items>
+      <div className="footer">
+        <p> 저작권 ⓒ <span style={{fontWeight:'bold'}}>Kim Myeong Hoon</span>에게 모든 권한이 있습니다.</p>
+      </div>
+    </Container>
   );
 }
 export default Login;
