@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import imgLogo from "../images/tier_logo.png";
 import AxiosApi from "../api/AxiosApi";
 import { Input, Button, Container, Items } from "../component/LoginComponent";
+import Modal from "../utils/Modal";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -55,6 +56,9 @@ const Login = () => {
       window.localStorage.setItem('email', inputEmail);
       window.localStorage.setItem('isLogin', "TRUE");
       navigate('/home');
+    } else {
+      setModelOpen(true);
+      setModelContent('아이디 및 패스워드를 재확인해주세요.')
     }
   }
   return (
@@ -89,6 +93,7 @@ const Login = () => {
       <div className="footer">
         <p> 저작권 ⓒ <span style={{fontWeight:'bold'}}>Kim Myeong Hoon</span>에게 모든 권한이 있습니다.</p>
       </div>
+      <Modal open={modalOpen} close={closeModal} header='오류'>{modalContent}</Modal>
     </Container>
   );
 }

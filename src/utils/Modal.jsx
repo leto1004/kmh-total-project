@@ -90,3 +90,27 @@ const Button = styled.button`
   border: 0;
   width: 60px;
 `;
+
+const Modal = (props) => {
+  const { open, confirm, close, type, header, children } = props;
+  return (
+    <ModalStyle>
+      <div className={open ? 'openModal modal' : 'modal'}>
+        {open && (
+          <section>
+            <header>
+              {header}
+              <button onClick={close}>&times;</button>
+            </header>
+            <main>{children}</main>
+            <footer>
+              {type && <Button onClick={confirm}>확인</Button>}
+              <Button onClick={close}>취소</Button>
+            </footer>
+          </section>
+        )}
+      </div>
+    </ModalStyle>
+  );
+}
+export default Modal;
