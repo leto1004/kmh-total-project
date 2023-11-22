@@ -4,23 +4,23 @@ import AxiosApi from "../api/AxiosApi";
 
 const Login = () => {
   const navigate = useNavigate();
-
+  // 키보드 입력 (이메일과 패스워드)
   const [inputEmail, setInputEmail] = useState('');
   const [inputPw, setInputPw] = useState('');
-  
+  // 오류 메시지
   const [emailMsg, setEmailMsg] = useState('');
   const [pwMsg, setPwMsg] = useState('');
-
-   // 로그인 버튼에 대한 활성 조건
+   // 유효성 검사
   const [isEmail, setIsEmail] = useState('');
   const [isPw, setIsPw] = useState('');
-
+  // 모달 내용 변경 : 팝업 띄우기
   const [modalContent, setModelContent] = useState('');
+  // 모달 팝업 처리
   const [modalOpen, setModelOpen] = useState(false);
   const closeModal = () => {
     setModelOpen(false);
   };
-
+  // 입력 및 정규식 체크 : 이메일에 대한 정규식 체크
   const onChangeEmail = (e) => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     setInputEmail(e.target.value);
@@ -32,6 +32,7 @@ const Login = () => {
       setIsEmail(true);
     }
   }
+  // 입력 및 정규식 체크 : 이메일에 대한 정규식 체크
   const onChangePw = (e) => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,25}$/;
     setInputPw(e.target.value);
