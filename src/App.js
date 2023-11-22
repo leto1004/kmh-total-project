@@ -1,12 +1,12 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './signup/Login.jsX';
+import Login from './signup/Login.jsx';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<Login></Login>} />
+        <Route path='/' element={<Login />} />
       </Routes>
     </Router>
   );

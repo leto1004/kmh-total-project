@@ -1,1 +1,1 @@
-export const KMH_DOMAIN = 'http://localhost:8111';
+export const KMH_DOMAIN = 'http://182.230.222.184:8111';

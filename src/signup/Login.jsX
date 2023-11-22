@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import AxiosApi from "../api/AxoisApi";
+import AxiosApi from "../api/AxiosApi";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ const Login = () => {
   return (
     <>
       <input type="text" placeholder="이메일" value={inputEmail} onChange={onChangeEmail} /><br />
-      <input type="text" placeholder="비밀번호" value={inputPw} onChange={onChangePw} /><br />
+      <input type="password" placeholder="비밀번호" value={inputPw} onChange={onChangePw} /><br />
       {isEmail && isPw ? (<button onClick={onClickLogin}>로그인</button>): (<button disabled>로그인</button>)}
     </>
   );
