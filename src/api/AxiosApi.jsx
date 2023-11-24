@@ -22,7 +22,11 @@ const AxiosApi = {
       name: name
     }
     return await axios.post(KMH_DOMAIN + '/users/new', member);
-  }
-}
+  },
+  // 회원 상세 조회
+  memberGetOne : async(email)=>{
+    return await axios.get(KMH_DOMAIN + `/users/detail/${email}`);
+  },
+};
 
 export default AxiosApi;
