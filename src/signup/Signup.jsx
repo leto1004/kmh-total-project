@@ -98,9 +98,84 @@ const Signup = () => {
   }
 
   return (
-    <>
-      여기는 회원가입 페이지
-    </>
+    <Container>
+      <Items className="sign">
+        <span>Sign Up</span>
+      </Items>
+
+      <Items className="item2">
+        <Input
+          type="email"
+          placeholder="이메일"
+          value={inputEmail}
+          onChange={onChangeMail}
+        />
+      </Items>
+      <Items className="hint">
+        {inputEmail.length > 0 && (
+          <span className={`message ${isMail ? "success" : "error"}`}>
+            {mailMsg}
+          </span>
+        )}
+      </Items>
+      <Items className="item2">
+        <Input
+          type="password"
+          placeholder="패스워드"
+          value={inputPw}
+          onChange={onChangePw}
+        />
+      </Items>
+      <Items className="hint">
+        {inputPw.length > 0 && (
+          <span className={`message ${isPw ? "success" : "error"}`}>
+            {pwMsg}
+          </span>
+        )}
+      </Items>
+      <Items className="item2">
+        <Input
+          type="password"
+          placeholder="패스워드 확인"
+          value={inputConPw}
+          onChange={onChangeConPw}
+        />
+      </Items>
+      <Items className="hint">
+        {inputPw.length > 0 && (
+          <span className={`message ${isConPw ? "success" : "error"}`}>
+            {conPwMsg}
+          </span>
+        )}
+      </Items>
+      <Items className="item2">
+        <Input
+          type="text"
+          placeholder="이름"
+          value={inputName}
+          onChange={onChangeName}
+        />
+      </Items>
+
+      <Items className="item2">
+        {isMail && isPw && isConPw && isName ? (
+          <Button enabled onClick={onClickLogin}>
+            NEXT
+          </Button>
+        ) : (
+          <Button disabled>NEXT</Button>
+        )}
+        <Modal open={modalOpen} close={closeModal} header="오류">
+          {modalText}
+        </Modal>
+      </Items>
+      <div className="footer">
+        <p>
+          저작권 ©<span style={{ fontWeight: "bold" }}>KyungSoo. Jeong</span>{" "}
+          에게 모든 권한이 있습니다.
+        </p>
+      </div>
+    </Container>
   );
 }
 export default Signup;
