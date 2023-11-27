@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AxiosApi from "../api/AxiosApi";
 import styled from "styled-components";
+import Common from "../utils/Common";
 
 const Container = styled.div`
   display: flex;
@@ -90,7 +91,7 @@ const Members = () => {
               <MemberName>이름: {member.name}</MemberName>
               <MemberEmail>이메일: {member.email}</MemberEmail>
               <MemberJoinDate>
-                가입일: {member.regDate}
+                가입일: {Common.timeFromNow(member.regDate)}
               </MemberJoinDate>
             </UserInfo>
         </MemberInfoWrapper>

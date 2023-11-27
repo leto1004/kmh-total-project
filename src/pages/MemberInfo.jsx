@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import AxiosApi from "../api/AxiosApi";
 import styled from "styled-components";
+import Common from "../utils/Common";
 
 const Container = styled.div`
   padding: 24px;
@@ -154,7 +155,7 @@ const MemberInfo = () => {
             <Label>Email : {member.email}</Label>
           </Field>
           <Field>
-            <Label>가입일 : {member.regDate}</Label>
+            <Label>가입일 : {Common.timeFromNow(member.regDate)}</Label>
           </Field>
           {/* 현재 사용자가 로그인한 사용자인 경우에만 편집 버튼 표시 */}
           {isCurrentUser && (
