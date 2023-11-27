@@ -45,8 +45,7 @@ const Layout = () => {
       }
     };
     getMember();
-
-  });
+  }, []);
 
   return (
     <Container>

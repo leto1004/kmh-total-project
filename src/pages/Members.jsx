@@ -74,7 +74,7 @@ const Members = () => {
       }
     }
     getMembers(); // useEffect는 비동기 처리가 안됨 그러므로 내부에 비동기 함수를 만들고 해당 함수를 불러야함
-  });
+  },[]);
 
   const onClickMember = (email) => {
     console.log("onclick member : ", email);
