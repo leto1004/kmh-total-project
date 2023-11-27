@@ -27,6 +27,10 @@ const AxiosApi = {
   memberGetOne : async(email)=>{
     return await axios.get(KMH_DOMAIN + `/users/detail/${email}`);
   },
+  //회원 전체 조회
+  memberGet: async () => {
+    return await axios.get(KMH_DOMAIN + `/users/list`);
+  },
 };
 
 export default AxiosApi;
