@@ -41,6 +41,22 @@ const AxiosApi = {
     };
     return await axios.put(KMH_DOMAIN + `/users/modify`, member);
   },
+  // 카테고리 조회
+  cateList: async () => {
+    return await axios.get(KMH_DOMAIN + `/api/category/list`);
+  },
+  // 카테고리 만들기
+  cateInsert: async (email, category) => {
+    const cate = {
+      email: email,
+      categoryName: category,
+    };
+    return await axios.post(KMH_DOMAIN + `/api/category/new`, cate);
+  },
+  // 카테고리 삭제
+  cateDelete: async (categoryId) => {
+    return await axios.delete(KMH_DOMAIN + `/api/category/delete/${categoryId}`)
+  },
 };
 
 export default AxiosApi;
