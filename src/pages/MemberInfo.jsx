@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom"
 import AxiosApi from "../api/AxiosApi";
 import styled from "styled-components";
 import Common from "../utils/Common";
+import { storage } from "../api/firebase";
+import { UserContext } from "../context/UserStore";
 
 const Container = styled.div`
   padding: 24px;
@@ -69,8 +71,8 @@ const MemberInfo = () => {
   const [isCurrentUser, setIsCurrentUser] = useState(false); // 현재 사용자와 유저가 같은 사람인지 확인
   const [file, setFile] = useState(null); // 파일 추가
   const [url, setUrl] = useState(""); // 파이어베이스에 업로드한 이미지 주소
-  // const context = useContext(UserContext); // 전역 상태를 위한 부분
-  // const { setName } = context;
+  const context = useContext(UserContext); // 전역 상태를 위한 부분
+  const { setName } = context;
 
   useEffect(()=>{
     const memberInfo = async () => {
@@ -106,47 +108,46 @@ const MemberInfo = () => {
     const resp = await AxiosApi.memberUpdate(email, editName, url);
     if (resp.status === 200) {
       setEditMode(false);
-      setEditName(editName);
-      const rsp = await AxiosApi.memberGetOne(email);
-      setMember(rsp.data);
-      setUrl(rsp.data.image);
+      setName(editName);
+      const resp = await AxiosApi.memberGetOne(email);
+      setMember(resp.data);
+      setUrl(resp.data.image);
     }
 
    }
 
-  //  const handleUploadClick = async () => {
-  //   if (!file) {
-  //     alert("파일을 선택해주세요.");
-  //     return;
-  //   }
+   const handleUploadClick = async () => {
+    if (!file) {
+      alert("파일을 선택해주세요.");
+      return;
+    }
 
-  //   try {
-  //     const storageRef = storage.ref();
-  //     const fileRef = storageRef.child(file.name);
-  //     await fileRef.put(file);
+    try {
+      const storageRef = storage.ref();
+      const fileRef = storageRef.child(file.name);
+      await fileRef.put(file);
 
-  //     // 업로드 후 이미지 URL 가져오기
-  //     const uploadedUrl = await fileRef.getDownloadURL();
-  //     setUrl(uploadedUrl); // 미리보기 URL 업데이트
-  //   } catch (error) {
-  //     console.error("Upload failed", error);
-  //   }
-  // };
+      // 업로드 후 이미지 URL 가져오기
+      const uploadedUrl = await fileRef.getDownloadURL();
+      setUrl(uploadedUrl); // 미리보기 URL 업데이트
+    } catch (error) {
+      console.error("Upload failed", error);
+    }
+  };
 
   return (
     <Container>
       <UserInfo>
-        <UserImage src={url || "http://via.placeholder.com/160"} alt="User" />
         {!editMode ? (
+          <>
+          <UserImage src={member.image || "http://via.placeholder.com/160"} alt="User" />
           <UserName>{member.name}</UserName>
+          </>
         ) : (
-          <Input
-            type="text"
-            name="name"
-            placeholder="이름을 입력하세요."
-            value={editName}
-            onChange={handleChange}
-          />
+          <>
+            <UserImage src={url || member.image} alt="User" />
+            <Input type="text" name="name" placeholder="이름을 입력하세요." value={editName} onChange={handleChange} />
+          </>
         )}
       </UserInfo>
       {!editMode ? (
@@ -167,7 +168,7 @@ const MemberInfo = () => {
           <Field>
             <Label>이미지 업로드</Label>
             <input type="file" name="file" onChange={handleChange} />
-            <SubmitButton>업로드</SubmitButton>
+            <SubmitButton onClick={handleUploadClick}>업로드</SubmitButton>
           </Field>
           {/* 필요한 다른 입력 필드 */}
           <SubmitButton onClick={handleSubmit}>전송</SubmitButton>

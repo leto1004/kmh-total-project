@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import AxiosApi from "../api/AxiosApi";
 import {
@@ -18,15 +18,16 @@ import { FiSettings } from "react-icons/fi";
 import { FaHome, FaClipboardList, FaRegNewspaper } from "react-icons/fa";
 import { BiCameraMovie } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
+import { UserContext } from "../context/UserStore";
 
 const Layout = () => {
-  // 전역 상태 추가 예정
-
   // 사이드바 메뉴 열림 닫힘
   const [isMenuOpen, setIsMenuOpen] = useState('');
   const [member, setMember] = useState('');
   const navigate = useNavigate();
   const email = localStorage.getItem('email');
+  const context = useContext(UserContext);
+  const { color, name } = context;
   
   const onClickLeft = () => {
     setIsMenuOpen(!isMenuOpen); // 토글
@@ -38,17 +39,17 @@ const Layout = () => {
     const getMember = async() => {
       try {
         // 이메일로 회원에 대한 정보 조회
-        const rsp = await AxiosApi.memberGetOne(email);
-        setMember(rsp.data);
+        const resp = await AxiosApi.memberGetOne(email);
+        setMember(resp.data);
       } catch(e){
         console.error(e);
       }
     };
     getMember();
-  }, []);
+  }, [name]);
 
   return (
-    <Container>
+    <Container color={color}>
       <header className="mainhead">
         <div className="hambeger">
           {isMenuOpen ? (
