@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react"
 import AxiosApi from "../../api/AxiosApi";
+import CateTemplate from "./CateTemplate";
+import CateInsert from "./CateInsert";
+import CateList from "./CateList";
 
 const Category = () => {
   const [category, setCategory] = useState([]);
@@ -31,4 +34,12 @@ const Category = () => {
       setCategory(resp.data);
     }
   }
+
+  return (
+    <CateTemplate>
+      <CateInsert onInsert={onInsert}></CateInsert>
+      <CateList cates={category} onRemove={onRemove}></CateList>
+    </CateTemplate>
+  );
 }
+export default Category;

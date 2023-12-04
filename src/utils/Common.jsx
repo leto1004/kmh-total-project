@@ -2,7 +2,7 @@ import moment from "moment";
 import "moment/locale/ko"; // 한글 로컬라이제이션
 moment.locale("ko"); // 한글 설정 적용
 
-export const KMH_DOMAIN = 'http://localhost:8111' // 'http://182.230.222.184:8111';
+export const KMH_DOMAIN = 'http://localhost:8111';
 
 const Common = {
   timeFromNow : (timestamp) => {

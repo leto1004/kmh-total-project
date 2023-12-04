@@ -55,7 +55,11 @@ const AxiosApi = {
   },
   // 카테고리 삭제
   cateDelete: async (categoryId) => {
-    return await axios.delete(KMH_DOMAIN + `/api/category/delete/${categoryId}`)
+    return await axios.delete(KMH_DOMAIN + `/api/category/delete/${categoryId}`);
+  },
+  // 게시글 조회
+  boardList: async () => {
+    return await axios.get(KMH_DOMAIN + `/api/board/list`);
   },
 };
 
