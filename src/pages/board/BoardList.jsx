@@ -116,14 +116,13 @@ const CategorySelect = styled.select`
 `;
 
 // 게시판 목록 페이지 입니다.
-
 const BoardList = () => {
   const [boardList, setBoardList] = useState([]); // 게시글 목록
   const [categories, setCategories] = useState([]); // 카테고리 목록
-  const [selectedCategory, setSelectedCategory] = useState('all'); // 선택된 카테고리
+  const [selectedCategory, setSelectedCategory] = useState("all"); // 선택된 카테고리
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     const getCategories = async () => {
       try {
         const resp = await AxiosApi.cateList();
@@ -131,60 +130,66 @@ const BoardList = () => {
       } catch (e) {
         console.log(e);
       }
-    }
+    };
     getCategories();
-  },[]);
- 
-  useEffect(()=>{
+  }, []);
+
+  useEffect(() => {
     const boardList = async () => {
       try {
         const resp = await AxiosApi.boardList();
         // 카테고리에 대한 필터 적용
-        const filterList = selectedCategory === 'all' ? resp.date : resp.data.filter((board) => board.categoryId === parseInt(selectedCategory));
+        const filterList = selectedCategory === "all" ? resp.data : resp.data.filter((board) => board.categoryId === parseInt(selectedCategory));
         setBoardList(filterList);
       } catch (e) {
         console.log(e);
       }
-    }
+    };
     boardList();
-  },[selectedCategory]);
-  
+  }, [selectedCategory]);
   // 글쓰기 버튼
   const handleWriteClick = () => {
-    navigate('/boardWrite');
-  }
-
+    navigate("/boardWrite");
+  };
   // 글상세보기 클릭 시
   const handleDetailClick = (boardId) => {
     navigate(`/boardDetail/${boardId}`);
-  }
-
+  };
   return (
     <BoardContainer>
       <Title>게시판 목록</Title>
-      <CategorySelect value={selectedCategory} onChange={e=>setSelectedCategory(e.target.value)}>
-        <option value='all'>전체</option>
-        {categories.map((category)=>(
-          <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+      <CategorySelect value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+        <option value="all">전체</option>
+        {categories.map((category) => (
+          <option key={category.categoryId} value={category.categoryId}>
+            {category.categoryName}
+          </option>
         ))}
       </CategorySelect>
       <BoardUl>
-        {boardList && boardList.map(board => (
-          <BoardLi key={board.boardId} onClick={()=>handleDetailClick(board.boardId)}>
-            <BoardImage src={board.img ? board.img : 'http://via.placeholder.com/160'} alt="Board img"></BoardImage>
-            <BoardContentWrapper>
-              <BoardHeader>
-                <BoardTitle>{board.title}</BoardTitle>
-                <UserId>{board.email}</UserId>
-              </BoardHeader>
-              <BoardContent>{board.content}</BoardContent>
-              <BoardDate>{Common.timeFromNow(board.regDate)}</BoardDate>
-            </BoardContentWrapper>
-          </BoardLi>
-        ))}
+        {boardList &&
+          boardList.map((board) => (
+            <BoardLi
+              key={board.boardId}
+              onClick={() => handleDetailClick(board.boardId)}
+            >
+              <BoardImage
+                src={board.img ? board.img : "http://via.placeholder.com/160"}
+                alt="Board img"
+              />
+              <BoardContentWrapper>
+                <BoardHeader>
+                  <BoardTitle>{board.title}</BoardTitle>
+                  <UserId>{board.email}</UserId>
+                </BoardHeader>
+                <BoardContent>{board.content}</BoardContent>
+                <BoardDate>{Common.timeFromNow(board.regDate)}</BoardDate>
+              </BoardContentWrapper>
+            </BoardLi>
+          ))}
       </BoardUl>
-      <CircleFixedButton onClick={handleWriteClick}></CircleFixedButton>
+      <CircleFixedButton onClick={handleWriteClick} />
     </BoardContainer>
   );
-}
+};
 export default BoardList;

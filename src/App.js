@@ -11,6 +11,7 @@ import ThemeSetting from './pages/ThemeSetting';
 import Category from './pages/board/Category';
 import BoardList from './pages/board/BoardList';
 import BoardWrite from './pages/board/BoardWrite';
+import BoardDetile from './pages/board/BoardDetail';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path='/category' element={<Category />} />
             <Route path='/boards' element={<BoardList />} />
             <Route path='/boardWrite' element={<BoardWrite />} />
+            <Route path='/boardDetail/:id' element={<BoardDetile />} />
           </Route>
         </Routes>
       </Router>
