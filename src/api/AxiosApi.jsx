@@ -61,6 +61,16 @@ const AxiosApi = {
   boardList: async () => {
     return await axios.get(KMH_DOMAIN + `/api/board/list`);
   },
+  boardWrite: async (email, title, categoryId, content, img) => {
+    const board = {
+      email: email,
+      title: title,
+      categoryId: categoryId,
+      content: content,
+      img: img
+    };
+    return await axios.post(KMH_DOMAIN + `/api/board/new`, board);
+  },
 };
 
 export default AxiosApi;

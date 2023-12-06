@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { timeFromNow } from "../../utils/Common"
-import Category from "./Category";
+import Common from "../../utils/Common";
 
 const BoardContainer = styled.div`
   padding: 0 30px;
@@ -156,8 +155,8 @@ const BoardList = () => {
   }
 
   // 글상세보기 클릭 시
-  const handleDetailClick = (email) => {
-    navigate(`/boardDetail/${email}`);
+  const handleDetailClick = (boardId) => {
+    navigate(`/boardDetail/${boardId}`);
   }
 
   return (
@@ -165,11 +164,26 @@ const BoardList = () => {
       <Title>게시판 목록</Title>
       <CategorySelect value={selectedCategory} onChange={e=>setSelectedCategory(e.target.value)}>
         <option value='all'>전체</option>
-        {categories.map((Category)=>(
-          <option key={Category.categoryId} value={Category.categoryId}>{Category.categoryName}</option>
+        {categories.map((category)=>(
+          <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
         ))}
       </CategorySelect>
-
+      <BoardUl>
+        {boardList && boardList.map(board => (
+          <BoardLi key={board.boardId} onClick={()=>handleDetailClick(board.boardId)}>
+            <BoardImage src={board.img ? board.img : 'http://via.placeholder.com/160'} alt="Board img"></BoardImage>
+            <BoardContentWrapper>
+              <BoardHeader>
+                <BoardTitle>{board.title}</BoardTitle>
+                <UserId>{board.email}</UserId>
+              </BoardHeader>
+              <BoardContent>{board.content}</BoardContent>
+              <BoardDate>{Common.timeFromNow(board.regDate)}</BoardDate>
+            </BoardContentWrapper>
+          </BoardLi>
+        ))}
+      </BoardUl>
+      <CircleFixedButton onClick={handleWriteClick}></CircleFixedButton>
     </BoardContainer>
   );
 }
