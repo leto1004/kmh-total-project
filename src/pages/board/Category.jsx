@@ -12,7 +12,9 @@ const Category = () => {
     const cateList = async () => {
       try {
         const resp = await AxiosApi.cateList();
-        if(resp.status === 200) {}
+        if(resp.status === 200) {
+          setCategory(resp.data);
+        }
       } catch(e){
         console.log(e);
       }
