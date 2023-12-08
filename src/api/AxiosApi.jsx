@@ -61,6 +61,7 @@ const AxiosApi = {
   boardList: async () => {
     return await axios.get(KMH_DOMAIN + `/api/board/list`);
   },
+  // 게시글 쓰기
   boardWrite: async (email, title, categoryId, content, img) => {
     const board = {
       email: email,
@@ -70,6 +71,27 @@ const AxiosApi = {
       img: img
     };
     return await axios.post(KMH_DOMAIN + `/api/board/new`, board);
+  },
+  // 게시글 상세 조회
+  boardDetail: async (boardId) => {
+    return await axios.get(KMH_DOMAIN + `/api/board/detail/${boardId}`);
+  },
+  // 게시글 삭제
+  boardDelete: async (boardId) => {
+    return await axios.delete(KMH_DOMAIN + `/api/board/delete/${boardId}`);
+  },
+  // 게시글에 달린 댓글 조회
+  commentList: async (boardId) => {
+    return await axios.get(KMH_DOMAIN + `/api/comment/list/${boardId}`);
+  },
+  // 댓글 쓰기
+  commentWrite: async (email, boardId, content) => {
+    const comment = {
+      boardId: boardId,
+      email: email,
+      content: content,
+    };
+    return await axios.post(KMH_DOMAIN + `/api/comment/new`, comment);
   },
 };
 

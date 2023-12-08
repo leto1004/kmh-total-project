@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AxiosApi from "../../api/AxiosApi";
 import styled from "styled-components";
 import Common from "../../utils/Common";
@@ -80,7 +80,7 @@ const CommentContent = styled.p`
   margin: 0;
   padding: 0;
 `;
-const CommentEmail = styled.p`
+const CommentEmail = styled.div`
   display: flex;
   justify-content: space-between;
   color: #555;
@@ -105,19 +105,87 @@ const BoardDetile = () => {
   const [inputComment, setInputComment] = useState(''); // 댓글 쓰기
   const [comAddFleg, setComAddFlag] = useState(false); // 댓글 추가 성곡 여부
   const [showComments, setShowComments]= useState(false); // 토글로 댓글 목록보기
+  const email = localStorage.getItem("email");
+  const navigate = useNavigate();
 
   const toggleComments = () => {
     setShowComments(!showComments); // 토글기능
   };
 
+  useEffect(()=>{
+    const getBoardDetail = async () => {
+      try {
+        const resp = await AxiosApi.boardDetail(id);
+        setBoard(resp.data);
+        const resp2 = await AxiosApi.commentList(id);
+        setComments(resp2.data);
+      } catch(e){
+        console.log(e);
+      }
+    }
+    getBoardDetail();
+  },[comAddFleg, id]);
+
+  const handleCommentChange = (e) => {
+    setInputComment(e.target.value);
+  };
+
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    try {
+      await AxiosApi.commentWrite(email, id, inputComment);
+      setInputComment('');
+      setComAddFlag(!comAddFleg);
+    } catch(e){
+      console.log(e);
+    }
+  }
+
+  const modifyBoard = () => {
+    console.log('게시글 수정');
+  }
+
+  const deleteBoard = async () => {
+    if(window.confirm('정말 삭제하시겠습니까?')){
+      try {
+        await AxiosApi.boardDelete(id);
+        window.alert('게시글이 삭제 되었습니다.');
+        navigate('/boards');
+      } catch(e){
+        console.log(e);
+      }
+    }
+  }
 
 
   return (
     <Container>
-      <BoardImage
-        src={board.img ? board.img : "http://via.placeholder.com/160"}
-        alt="Board image"
-      />
+      <BoardImage src={board.img ? board.img : "http://via.placeholder.com/160"} alt="Board image" />
+      <Title>{board.title}</Title>
+      <Content>{board.content}</Content>
+      <BoardDate>{Common.timeFromNow(board.regDate)}</BoardDate>
+      <button onClick={toggleComments}>
+        {showComments ? '댓글 숨기기' : `댓글 ${comments.length}개 보기`}
+      </button>
+      <button onClick={deleteBoard}>삭제</button>
+      <CommentForm onSubmit={handleSubmitComment}>
+        <CommentInput type="text" value={inputComment} onChange={handleCommentChange} />
+        <SubmitButton type="submit">댓글 추가</SubmitButton>
+      </CommentForm>
+      {showComments && (
+        <CommentList>
+          {comments &&
+            comments.map((comment) => (
+              <CommentItem key={comment.commentId}>
+                <CommentEmail>
+                  <p>{comment.email}</p>
+                  <p>{Common.timeFromNow(comment.regDate)}</p>
+                </CommentEmail>
+                <CommentContent>{comment.content}</CommentContent>
+              </CommentItem>
+            ))}
+        </CommentList>
+      )}
     </Container>
   );
 }
