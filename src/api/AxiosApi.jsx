@@ -211,15 +211,11 @@ const AxiosApi = {
   },
   // 영화 페이지 수 조회
   moviePage: async (page, size) => {
-    return await axios.get(
-      Common.KMH_DOMAIN + `/movies/list/count?page=${page}&size=${size}`
-    );
+    return await axios.get(Common.KMH_DOMAIN + `/movies/list/count?page=${page}&size=${size}`);
   },
   // 영화 페이지네이션 조회
   moviePageList: async (page, size) => {
-    return await axios.get(
-      Common.KMH_DOMAIN + `/movies/list/page?page=${page}&size=${size}`
-    );
+    return await axios.get(Common.KMH_DOMAIN + `/movies/list/page?page=${page}&size=${size}`);
   },
   // 채팅방 목록 보기
   chatList: async () => {
