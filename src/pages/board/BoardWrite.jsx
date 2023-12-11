@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AxiosApi from "../../api/AxiosApi";
 import styled from "styled-components";
 import { storage } from "../../api/firebase";
+import Common from "../../utils/Common";
 
 const FormContainer = styled.div`
   padding: 20px;
@@ -117,55 +118,88 @@ const StyledSelect = styled.select`
 `;
 
 const BoardWrite = () => {
-  const [title, setTitle] = useState(''); // 글제목
-  const [content, setContent] = useState(''); // 글내용
+  const [title, setTile] = useState(""); // 글제목
+  const [content, setContent] = useState(""); // 글내용
   const [file, setFile] = useState(null); // 이미지 첨부
-  const [url, setUrl] = useState(''); // 파이어베이스의 이미지 경로
+  const [url, setUrl] = useState(""); // 파이어베이스의 이미지 경로
   const [categories, setCategories] = useState([]); // 카테고리 목록을 보여줌
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const email = localStorage.getItem('email'); // 글쓴이의 정보를 가져옴
-  const navigate = useNavigate(); // 글쓰기 완료 후 게시글 목록으로 이동하기
+  const [selectedCategory, setSelectedCategory] = useState("");
+  // const email = localStorage.getItem("email"); // 글쓴이의 정보를 가져옴
+  const navigate = useNavigate(); // 글쓰기 완료 후 게시글 목록으로 이동하기 위해서
 
-  useEffect(()=>{
+  useEffect(() => {
+    const accessToken = Common.getAccessToken();
     const getCategories = async () => {
-      try{
-        const resp = await AxiosApi.cateList();
-        setCategories(resp.data)
-      } catch(e) {
-        console.log(e);
+      try {
+        const rsp = await AxiosApi.cateList();
+        console.log(rsp.data);
+        setCategories(rsp.data);
+      } catch (e) {
+        if (e.response.status === 401) {
+          await Common.handleUnauthorized();
+          const newToken = Common.getAccessToken();
+          if (newToken !== accessToken) {
+            const rsp = await AxiosApi.cateList();
+            console.log(rsp.data);
+            setCategories(rsp.data);
+          }
+        }
       }
-    }
+    };
     getCategories();
-  },[]);
-
+  }, []);
   const handleTitleChange = (e) => {
-    setTitle(e.target.value);
+    setTile(e.target.value);
   };
-
   const handleContentChange = (e) => {
     setContent(e.target.value);
   };
-
   const handleSubmit = async () => {
+    const accessToken = Common.getAccessToken();
     try {
-      const resp = await AxiosApi.boardWrite(email, title, selectedCategory, content, url);
-      if (resp.data) navigate('/boards');
-      else alert('글쓰기 실패');
-    } catch(e) {
-      console.log(e);
+      const rsp = await AxiosApi.boardWrite(
+        title,
+        selectedCategory,
+        content,
+        url
+      );
+      if (rsp.data === true) {
+        alert("글쓰기 성공");
+        navigate("/Boards");
+      } else {
+        alert("글쓰기 실패");
+      }
+    } catch (e) {
+      if (e.response.status === 401) {
+        await Common.handleUnauthorized();
+        const newToken = Common.getAccessToken();
+        if (newToken !== accessToken) {
+          const rsp = await AxiosApi.boardWrite(
+            title,
+            selectedCategory,
+            content,
+            url
+          );
+          if (rsp.data === true) {
+            alert("글쓰기 성공");
+            navigate("/Boards");
+          } else {
+            alert("글쓰기 실패");
+          }
+        }
+      }
     }
   };
-
   const handleReset = () => {
-    setTitle('');
-    setContent('');
-    navigate('/boards');
-  }
+    setTile("");
+    setContent("");
+    navigate("/Boards");
+  };
   // 이미지 선택
-  const handleFileInputChange = e => {
+  const handleFileInputChange = (e) => {
     setFile(e.target.files[0]);
-  }
-  // 이미지를 파이어베에스에 업로드
+  };
+  // 이미지 파이어베이스에 업로드
   const handleUploadClick = async () => {
     try {
       const storageRef = storage.ref();
@@ -176,39 +210,57 @@ const BoardWrite = () => {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   return (
     <FormContainer>
       <Title>글쓰기</Title>
       <FieldContainer>
-        <StyledSelect value={selectedCategory} onChange={e=>setSelectedCategory(e.target.value)}>
-          <option value='' disabled selected>
+        <StyledSelect
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="" disabled selected>
             카테고리를 선택하세요.
           </option>
-          {categories.map(category => (
-            <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
-          ))}
+          {categories &&
+            categories.map((category) => (
+              <option key={category.categoryId} value={category.categoryId}>
+                {category.categoryName}
+              </option>
+            ))}
         </StyledSelect>
       </FieldContainer>
       <FieldContainer>
         <StyledLabel htmlFor="title">제목</StyledLabel>
-        <StyledInput type="text" id="title" name="title" value={title} onChange={handleTitleChange} />
+        <StyledInput
+          type="text"
+          id="title"
+          name="title"
+          value={title}
+          onChange={handleTitleChange}
+        />
       </FieldContainer>
       <FieldContainer>
         <StyledLabel htmlFor="content">내용</StyledLabel>
-        <StyledTextarea id="content" name="content" value={content} onChange={handleContentChange} />
+        <StyledTextarea
+          id="content"
+          name="content"
+          value={content}
+          onChange={handleContentChange}
+        />
       </FieldContainer>
       <FileUploadContainer>
-        <StyledInput type="file" onChange={handleFileInputChange}></StyledInput>
-        <UploadButton onClick={handleUploadClick}>업로드</UploadButton>
+        <StyledInput type="file" onChange={handleFileInputChange} />
+        <UploadButton onClick={handleUploadClick}>Upload</UploadButton>
       </FileUploadContainer>
-      {url && <UserImage src={url} alt="uploaded" />}
+      {url && <UserImage src={url} alt="upload" />}
       <ButtonContainer>
         <SubmitButton onClick={handleSubmit}>글쓰기</SubmitButton>
         <SubmitButton onClick={handleReset}>취소</SubmitButton>
       </ButtonContainer>
     </FormContainer>
-  )
-}
+  );
+};
+
 export default BoardWrite;

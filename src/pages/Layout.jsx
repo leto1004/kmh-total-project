@@ -1,6 +1,4 @@
-import { useEffect, useState, useContext } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
-import AxiosApi from "../api/AxiosApi";
+import { Outlet } from "react-router-dom";
 import {
   Container,
   StyledSideMenu,
@@ -13,36 +11,49 @@ import {
   StyledLink,
   Dummy,
 } from "../component/LayoutComponent";
+import { UserContext } from "../context/UserStore";
+import { useContext, useState, useEffect } from "react";
 import { GiHamburgerMenu, GiCancel } from "react-icons/gi";
 import { FiSettings } from "react-icons/fi";
 import { FaHome, FaClipboardList, FaRegNewspaper } from "react-icons/fa";
 import { BiCameraMovie } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
-import { UserContext } from "../context/UserStore";
+import { useNavigate } from "react-router-dom";
+import AxiosApi from "../api/AxiosApi";
+// import useWeather from "../hooks/useWeather";
+import Common from "../utils/Common";
 
+// 사이드바 메뉴를 구성 합니다.
 const Layout = () => {
-  // 사이드바 메뉴 열림 닫힘
-  const [isMenuOpen, setIsMenuOpen] = useState('');
-  const [member, setMember] = useState('');
-  const navigate = useNavigate();
-  const email = localStorage.getItem('email');
   const context = useContext(UserContext);
   const { color, name } = context;
-  
+  // const { addr, temp } = useWeather(); // 커스텀 훅 사용
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const [member, setMember] = useState({});
+
   const onClickLeft = () => {
-    setIsMenuOpen(!isMenuOpen); // 토글
+    setIsMenuOpen(!isMenuOpen);
   };
   const onClickRight = () => {
-    navigate('/setting');
+    navigate("/setting");
   };
-  useEffect(()=>{
-    const getMember = async() => {
+
+  useEffect(() => {
+    const accessToken = Common.getAccessToken();
+    const getMember = async () => {
       try {
-        // 이메일로 회원에 대한 정보 조회
-        const resp = await AxiosApi.memberGetOne(email);
-        setMember(resp.data);
-      } catch(e){
-        console.error(e);
+        const rsp = await AxiosApi.memberGetInfo();
+        setMember(rsp.data);
+      } catch (e) {
+        if (e.response.status === 401) {
+          await Common.handleUnauthorized();
+          const newToken = Common.getAccessToken();
+          if (newToken !== accessToken) {
+            const rsp = await AxiosApi.memberGetInfo();
+            setMember(rsp.data);
+          }
+        }
       }
     };
     getMember();
@@ -57,6 +68,10 @@ const Layout = () => {
           ) : (
             <GiHamburgerMenu size={32} color="white" onClick={onClickLeft} />
           )}
+        </div>
+        <div className="welcome">
+          <span style={{ fontWeight: "bold" }}>{member.name}</span>님
+          환영합니다.
         </div>
         <div className="setting">
           <FiSettings size={32} color="white" onClick={onClickRight} />
@@ -76,6 +91,7 @@ const Layout = () => {
                 <span>{member.email}</span>
               </UserIdAndName>
             </UserContainer>
+            {/* <Addr>{addr}, {temp}</Addr> */}
             <StyledMenuItem>
               <MenuIcon>
                 <FaHome />

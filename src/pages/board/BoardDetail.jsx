@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import AxiosApi from "../../api/AxiosApi";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Common from "../../utils/Common";
+import { useNavigate } from "react-router-dom";
 
 // 여기에 스타일드 컴포넌트를 정의합니다.
 const Container = styled.div`
@@ -13,15 +14,26 @@ const Container = styled.div`
   border-radius: 8px;
 `;
 
+const FieldContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const TextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+`;
+
 const Title = styled.h1`
   color: #333;
   font-size: 2em;
-  margin-bottom: 10px;
 `;
 
 const Content = styled.p`
   color: #666;
   line-height: 1.5;
+  white-space: pre-wrap;
 `;
 
 const CommentForm = styled.form`
@@ -39,10 +51,9 @@ const BoardImage = styled.img`
 `;
 
 const CommentInput = styled.input`
-  width: 100%;
+  width: 82%;
   padding: 10px;
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin: 10px;
   box-sizing: border-box;
 `;
 const SubmitButton = styled.button`
@@ -54,7 +65,6 @@ const SubmitButton = styled.button`
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 4px 2px;
   transition-duration: 0.4s;
   cursor: pointer;
 
@@ -80,7 +90,7 @@ const CommentContent = styled.p`
   margin: 0;
   padding: 0;
 `;
-const CommentEmail = styled.div`
+const CommentEmail = styled.p`
   display: flex;
   justify-content: space-between;
   color: #555;
@@ -88,6 +98,22 @@ const CommentEmail = styled.div`
   font-size: 13px;
   margin: 0;
   padding: 0;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+`;
+
+const Button = styled.button`
+  padding: 8px 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 
 const BoardDate = styled.p`
@@ -98,33 +124,77 @@ const BoardDate = styled.p`
 
 // 게시글 상세 보기와 댓글 목록을 보여주는 컴포넌트입니다.
 
-const BoardDetile = () => {
-  const { id } = useParams(); // 라우터 이동시 ID를 넘겨 받음
-  const [board, setBoard] = useState(''); // 게시글 보기
-  const [comments, setComments] = useState(''); // 댓글 목록
-  const [inputComment, setInputComment] = useState(''); // 댓글 쓰기
-  const [comAddFleg, setComAddFlag] = useState(false); // 댓글 추가 성곡 여부
-  const [showComments, setShowComments]= useState(false); // 토글로 댓글 목록보기
-  const email = localStorage.getItem("email");
+const BoardDetail = () => {
+  const { id } = useParams();
+  const [board, setBoard] = useState("");
+  const [comments, setComments] = useState("");
+  const [inputComment, setInputComment] = useState("");
+  const [comAddFlag, setComAddFlag] = useState(false); // 댓글 추가 성공 여부
+  const [loginUserEmail, setLoginUserEmail] = useState(""); // 현재 로그인 유저의 이메일
+  const [showComments, setShowComments] = useState(false);
   const navigate = useNavigate();
 
   const toggleComments = () => {
-    setShowComments(!showComments); // 토글기능
+    setShowComments(!showComments);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
+    const token = Common.getAccessToken();
     const getBoardDetail = async () => {
+      console.log("getBoardDetail : " + id);
       try {
-        const resp = await AxiosApi.boardDetail(id);
-        setBoard(resp.data);
-        const resp2 = await AxiosApi.commentList(id);
-        setComments(resp2.data);
-      } catch(e){
-        console.log(e);
+        const response = await AxiosApi.boardDetail(id); // 게시글 상세
+        setBoard(response.data);
+        const response2 = await AxiosApi.commentList(id); // 댓글 목록
+        setComments(response2.data);
+        const response3 = await AxiosApi.memberGetInfo(); // 현재 로그인 유저의 이메일
+        setLoginUserEmail(response3.data.email);
+      } catch (e) {
+        if (e.response.status === 401) {
+          await Common.handleUnauthorized();
+          const newToken = Common.getAccessToken();
+          if (newToken !== token) {
+            const response = await AxiosApi.boardDetail(id);
+            setBoard(response.data);
+            const response2 = await AxiosApi.commentList(id);
+            setComments(response2.data);
+          }
+        }
       }
-    }
+    };
     getBoardDetail();
-  },[comAddFleg, id]);
+  }, [comAddFlag, id]);
+
+  const modifyBoard = () => {
+    console.log("modifyBoard : " + id);
+  };
+  const deleteBoard = () => {
+    console.log("deleteBoard : " + id);
+    // 삭제 확인을 위한 팝업 띄우기
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      const token = Common.getAccessToken();
+      const deleteBoard = async () => {
+        try {
+          const response = await AxiosApi.boardDelete(id);
+          console.log(response);
+          window.alert("삭제되었습니다.");
+          navigate("/boards");
+        } catch (e) {
+          if (e.response.status === 401) {
+            await Common.handleUnauthorized();
+            const newToken = Common.getAccessToken();
+            if (newToken !== token) {
+              const response = await AxiosApi.boardDelete(id);
+              console.log(response);
+              window.alert("삭제되었습니다.");
+              window.location.href = "/boardList";
+            }
+          }
+        }
+      };
+      deleteBoard();
+    }
+  };
 
   const handleCommentChange = (e) => {
     setInputComment(e.target.value);
@@ -133,43 +203,47 @@ const BoardDetile = () => {
   const handleSubmitComment = async (e) => {
     e.preventDefault();
     try {
-      await AxiosApi.commentWrite(email, id, inputComment);
-      setInputComment('');
-      setComAddFlag(!comAddFleg);
-    } catch(e){
-      console.log(e);
+      const response = await AxiosApi.commentWrite(id, inputComment);
+      console.log(response);
+      setInputComment("");
+      setComAddFlag(!comAddFlag);
+    } catch (error) {
+      console.log(error);
     }
-  }
-
-  const modifyBoard = () => {
-    console.log('게시글 수정');
-  }
-
-  const deleteBoard = async () => {
-    if(window.confirm('정말 삭제하시겠습니까?')){
-      try {
-        await AxiosApi.boardDelete(id);
-        window.alert('게시글이 삭제 되었습니다.');
-        navigate('/boards');
-      } catch(e){
-        console.log(e);
-      }
-    }
-  }
-
+  };
 
   return (
     <Container>
-      <BoardImage src={board.img ? board.img : "http://via.placeholder.com/160"} alt="Board image" />
-      <Title>{board.title}</Title>
-      <Content>{board.content}</Content>
-      <BoardDate>{Common.timeFromNow(board.regDate)}</BoardDate>
-      <button onClick={toggleComments}>
-        {showComments ? '댓글 숨기기' : `댓글 ${comments.length}개 보기`}
-      </button>
-      <button onClick={deleteBoard}>삭제</button>
+      <FieldContainer>
+        <BoardImage
+          src={board.img ? board.img : "http://via.placeholder.com/160"}
+          alt="Board image"
+        />
+        <TextContainer>
+          <Title>{board.title}</Title>
+          <Content>{board.content}</Content>
+          <BoardDate>{Common.timeFromNow(board.regDate)}</BoardDate>
+        </TextContainer>
+      </FieldContainer>
+
+      <ButtonContainer>
+        <Button onClick={toggleComments}>
+          {showComments ? "댓글 숨기기" : `댓글 ${comments.length}개 보기`}
+        </Button>
+        {loginUserEmail === board.email && (
+          <>
+            <Button onClick={modifyBoard}>수정</Button>
+            <Button onClick={deleteBoard}>삭제</Button>
+          </>
+        )}
+      </ButtonContainer>
+
       <CommentForm onSubmit={handleSubmitComment}>
-        <CommentInput type="text" value={inputComment} onChange={handleCommentChange} />
+        <CommentInput
+          type="text"
+          value={inputComment}
+          onChange={handleCommentChange}
+        />
         <SubmitButton type="submit">댓글 추가</SubmitButton>
       </CommentForm>
       {showComments && (
@@ -188,6 +262,6 @@ const BoardDetile = () => {
       )}
     </Container>
   );
-}
+};
 
-export default BoardDetile;
+export default BoardDetail;

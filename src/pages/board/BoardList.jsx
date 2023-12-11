@@ -123,30 +123,59 @@ const BoardList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const accessToken = Common.getAccessToken();
     const getCategories = async () => {
       try {
-        const resp = await AxiosApi.cateList();
-        setCategories(resp.data);
+        const rsp = await AxiosApi.cateList();
+        console.log(rsp.data);
+        setCategories(rsp.data);
       } catch (e) {
-        console.log(e);
+        if (e.response.status === 401) {
+          await Common.handleUnauthorized();
+          const newToken = Common.getAccessToken();
+          if (newToken !== accessToken) {
+            const rsp = await AxiosApi.cateList();
+            console.log(rsp.data);
+            setCategories(rsp.data);
+          }
+        }
       }
     };
     getCategories();
   }, []);
-
+  
   useEffect(() => {
+    const accessToken = Common.getAccessToken();
     const boardList = async () => {
       try {
-        const resp = await AxiosApi.boardList();
-        // 카테고리에 대한 필터 적용
-        const filterList = selectedCategory === "all" ? resp.data : resp.data.filter((board) => board.categoryId === parseInt(selectedCategory));
-        setBoardList(filterList);
+        const rsp = await AxiosApi.boardList();
+        const filteredList =
+          selectedCategory === "all"
+            ? rsp.data
+            : rsp.data.filter(
+                (board) => board.categoryId === parseInt(selectedCategory)
+              );
+        setBoardList(filteredList);
       } catch (e) {
-        console.log(e);
+        if (e.response.status === 401) {
+          await Common.handleUnauthorized();
+          const newToken = Common.getAccessToken();
+          if (newToken !== accessToken) {
+            const rsp = await AxiosApi.boardList();
+            const filteredList =
+              selectedCategory === "all"
+                ? rsp.data
+                : rsp.data.filter(
+                    (board) => board.categoryId === parseInt(selectedCategory)
+                  );
+            setBoardList(filteredList);
+          }
+        }
       }
     };
     boardList();
   }, [selectedCategory]);
+  
   // 글쓰기 버튼
   const handleWriteClick = () => {
     navigate("/boardWrite");

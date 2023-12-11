@@ -65,17 +65,24 @@ const Members = () => {
 
   // 화면이 
   useEffect(() => {
-    const getMembers = async () => {
+    const accessToken = Common.getAccessToken();
+    const memberInfo = async () => {
       try {
-        const resp = await AxiosApi.memberGet(); // 전체조회
-        console.log(resp.data);
-        setMembers(resp.data); // 서버에서 받아온 회원 리스트 데이터로 상태를 갱신함
+        const rsp = await AxiosApi.memberGet(); // 전체 조회
+        if (rsp.status === 200) setMembers(rsp.data);
       } catch (e) {
-        console.log(e);
+        if (e.response.status === 401) {
+          await Common.handleUnauthorized();
+          const newToken = Common.getAccessToken();
+          if (newToken !== accessToken) {
+            const rsp = await AxiosApi.memberGet(); // 전체 조회
+            if (rsp.status === 200) setMembers(rsp.data);
+          }
+        }
       }
-    }
-    getMembers(); // useEffect는 비동기 처리가 안됨 그러므로 내부에 비동기 함수를 만들고 해당 함수를 불러야함
-  },[]);
+    };
+    memberInfo();
+  }, []);
 
   const onClickMember = (email) => {
     console.log("onclick member : ", email);

@@ -4,6 +4,7 @@ import imgLogo from "../images/tier_logo.png";
 import AxiosApi from "../api/AxiosApi";
 import { Input, Button, Container, Items } from "../component/LoginComponent";
 import Modal from "../utils/Modal";
+import Common from "../utils/Common";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,11 +18,11 @@ const Login = () => {
   const [isEmail, setIsEmail] = useState('');
   const [isPw, setIsPw] = useState('');
   // 모달 내용 변경 : 팝업 띄우기
-  const [modalContent, setModelContent] = useState('');
+  const [modalContent, setModalContent] = useState('');
   // 모달 팝업 처리
-  const [modalOpen, setModelOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const closeModal = () => {
-    setModelOpen(false);
+    setModalOpen(false);
   };
   // 입력 및 정규식 체크 : 이메일에 대한 정규식 체크
   const onChangeEmail = (e) => {
@@ -48,19 +49,26 @@ const Login = () => {
     }
   }
   const onClickLogin = async () => {
-    // 로그인을 위해 Axois 호출
-    const response = await AxiosApi.memberLogin(inputEmail, inputPw);
-    console.log(response.data);
-    if(response.data) {
-      // 내부 저장소에 로그인 성공 시 로그인 상태 저장
-      localStorage.setItem('email', inputEmail);
-      localStorage.setItem('isLogin', "TRUE");
-      navigate('/home');
-    } else {
-      setModelOpen(true);
-      setModelContent('아이디 및 패스워드를 재확인해주세요.')
+    //로그인을 위한 axios 호출
+    try {
+      const res = await AxiosApi.memberLogin(inputEmail, inputPw);
+      console.log(res.data);
+      if (res.data.grantType === "Bearer") {
+        console.log("accessToken : ", res.data.accessToken);
+        console.log("refreshToken : ", res.data.refreshToken);
+        Common.setAccessToken(res.data.accessToken);
+        Common.setRefreshToken(res.data.refreshToken);
+        navigate("/home");
+      } else {
+        setModalOpen(true);
+        setModalContent("아이디 및 패스워드를 재확인해 주세요.^^");
+      }
+    } catch (err) {
+      console.log(err);
+      setModalOpen(true);
+      setModalContent("아이디 및 패스워드를 재확인해 주세요.^^");
     }
-  }
+  };
   return (
     <Container>
       <Items className="item1">
