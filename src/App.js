@@ -11,25 +11,53 @@ import ThemeSetting from './pages/ThemeSetting';
 import Category from './pages/board/Category';
 import BoardList from './pages/board/BoardList';
 import BoardWrite from './pages/board/BoardWrite';
-import BoardDetile from './pages/board/BoardDetail';
+import BoardDetail from './pages/board/BoardDetail';
+import Movies from './pages/Movie';
+import ChatList from './pages/chatting/ChatList';
+import ChatRoomCreate from './pages/chatting/ChatRoomCreate';
 
 function App() {
+  const routes = [
+    { path: '/', element: <Login /> },
+    { path: '/signup', element: <Signup /> },
+    {
+      element: <Layout />,
+      children: [
+        { path: '/home', element: <Home /> },
+        { path: '/themeSetting', element: <ThemeSetting /> },
+        { path: '/members', element: <Members /> },
+        { path: '/memberInfo/:email', element: <MemberInfo /> },
+        { path: '/category', element: <Category /> },
+        { path: '/boards', element: <BoardList /> },
+        { path: '/boardWrite', element: <BoardWrite /> },
+        { path: '/boardDetail/:id', element: <BoardDetail /> },
+        { path: '/movies', element: <Movies /> },
+        { path: '/chat', element: <ChatList /> },
+        { path: '/chat-create', element: <ChatRoomCreate /> },
+      ],
+    },
+  ];
+
   return (
     <UserStore>
       <Router>
         <Routes>
-          <Route path='/' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route element={<Layout />}>
-            <Route path='/home' element={<Home />} />
-            <Route path='/themeSetting' element={<ThemeSetting />} />
-            <Route path='/members' element={<Members />} />
-            <Route path='/memberInfo/:email' element={<MemberInfo />} />
-            <Route path='/category' element={<Category />} />
-            <Route path='/boards' element={<BoardList />} />
-            <Route path='/boardWrite' element={<BoardWrite />} />
-            <Route path='/boardDetail/:id' element={<BoardDetile />} />
-          </Route>
+          {routes.map((route, index) => {
+            if (route.children) {
+              return (
+                <Route key={index} element={route.element}>
+                  {route.children.map((childRoute, childIndex) => (
+                    <Route
+                      key={childIndex}
+                      path={childRoute.path}
+                      element={childRoute.element}
+                    />
+                  ))}
+                </Route>
+              );
+            }
+            return <Route key={index} path={route.path} element={route.element} />;
+          })}
         </Routes>
       </Router>
     </UserStore>

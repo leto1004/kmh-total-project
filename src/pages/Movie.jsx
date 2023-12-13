@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import AxiosApi from "../api/AxiosApi";
 import styled from "styled-components";
+import MovieCardView from "../component/MovieCardView";
 
 const CardContainer = styled.div`
   display: flex;
@@ -87,7 +88,23 @@ const Movies = () => {
   };
 
   return (
-    <></>
+    <>
+    <CardContainer>
+    {movies.map((movie)=>(
+      <MovieCardView
+      key={movie.rank}
+      rank={movie.rank}
+      image={movie.image}
+      title={movie.title}
+      score={movie.score}
+      rate={movie.rate}
+      reservation={movie.reservation}
+      date={movie.date}
+      />
+    ))}
+    </CardContainer>
+    {rederPagination()}
+    </>
   );
 }
 export default Movies;
