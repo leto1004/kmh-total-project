@@ -114,4 +114,13 @@ export const Dummy = styled.div`
   height: 54px;
 `;
 
+export const Addr= styled.div`
+display: flex;
+margin-left: 12px;
+align-items: center;
+font-size: 0.9em;
+font-style: italic;
+color: #222;
+`;
+
 export default Container;
