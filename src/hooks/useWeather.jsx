@@ -2,20 +2,25 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 const useWeather = () => {
-  const [location, setLocation] = useState({lat:0, long:0}); // 위도, 경도
-  const [coords, setCoords] = useState(""); // 기상청의 좌표
-  const [addr, setAddr] = useState(""); // 현재 위치의 주소
-  const [temp, setTemp] = useState(''); // 온도
+  const [location, setLocation] = useState({ lat: 0, long: 0 }); // 위도, 경도
+  const [coords, setCoords] = useState(""); // 위도, 경도
+  const [addr, setAddr] = useState(""); // 주소
+  const [temp, setTemp] = useState(""); // 온도
+  const [pty, setPty] = useState(""); // 하늘 상태
   const [intervalId, setIntervalId] = useState(null); // 갱신 주기를 관리하기 위한 상태
   const updateInterval = 60000; // 주기적 갱신 간격 (예: 1분)
 
   // 현재 위치 가져오기
-  useEffect(()=>{
+  useEffect(() => {
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
-  },[]);
+  }, []);
 
   // 현재 위치 가져오기
   const onSuccess = (position) => {
+    console.log(
+      "현재 위치 : " + position.coords.latitude,
+      position.coords.longitude
+    );
     setLocation({
       lat: position.coords.latitude,
       long: position.coords.longitude,
@@ -25,7 +30,6 @@ const useWeather = () => {
   const onError = (error) => {
     console.log(error);
   };
-
   // 현재 위치가 변경되면 주소를 가져온다.
   useEffect(() => {
     console.log(location.lat, location.long);
@@ -47,20 +51,19 @@ const useWeather = () => {
       );
       const fullAddress = response.data.documents[0].address;
       const neighborhoodAddress = `${fullAddress.region_1depth_name} ${fullAddress.region_2depth_name} ${fullAddress.region_3depth_name}`;
-      setAddr(neighborhoodAddress); // context에 저장
+      setAddr(neighborhoodAddress);
     } catch (error) {
       console.error("Kakao Geocoding error:", error);
     }
   };
-
-  // 주소가 변경되면 좌표 변환을 실행한다.(기상청 좌표 체계로 변경하기 위해서)
+  // 주소가 변경되면 좌표 변환을 실행한다.
   useEffect(() => {
     if (addr) {
       dfs_xy_conv("toXY", location.lat, location.long);
     }
   }, [addr]);
 
-  // 주기적으로 날씨 정보를 수집함
+  // 좌표가 변경되면 날씨 정보를 가져온다.
   useEffect(() => {
     if (coords) {
       getWeather();
@@ -78,7 +81,7 @@ const useWeather = () => {
         clearInterval(intervalId);
       }
     };
-  }, []);
+  }, [coords]);
 
   function dfs_xy_conv(code, v1, v2) {
     const RE = 6371.00877; // 지구 반경(km)
@@ -152,14 +155,14 @@ const useWeather = () => {
         `http://127.0.0.1:5000/api/weather2?x=${coords.x}&y=${coords.y}`
       );
       console.log(response.data);
-      setTemp(response.data.tmp); // context에 저장
+      setTemp(response.data.tmp);
+      setPty(response.data.pty);
     } catch (error) {
       console.error("Weather error:", error);
     }
   };
 
-  return { addr, temp };
-
-}
+  return { addr, temp, location, pty };
+};
 
 export default useWeather;

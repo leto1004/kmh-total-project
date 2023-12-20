@@ -13,6 +13,7 @@ import Movies from './pages/Movie';
 import ChatList from './pages/chatting/ChatList';
 import ChatRoomCreate from './pages/chatting/ChatRoomCreate';
 import Chatting from './pages/chatting/Chatting';
+import KakaoMap from './pages/KakaoMap';
 
 const RoutesCont = [
   { path: '/', element: <Login /> },
@@ -32,6 +33,7 @@ const RoutesCont = [
       { path: '/chat', element: <ChatList /> },
       { path: '/chat-create', element: <ChatRoomCreate /> },
       { path: '/chatting/:roomId', element: <Chatting /> },
+      { path: '/kakao', element: <KakaoMap /> },
     ],
   },
 ];

@@ -26,6 +26,9 @@ const Home = () => {
       case 7:
         navigate("/public");
         break;
+      case 8:
+        navigate("/kakao");
+        break;
       default:
     }
   }
@@ -39,6 +42,7 @@ const Home = () => {
       <TransBtn onClick={() => onClickBtn(5)}>영화 목록</TransBtn>
       <TransBtn onClick={() => onClickBtn(6)}>채팅</TransBtn>
       <TransBtn onClick={() => onClickBtn(7)}>공공데이터</TransBtn>
+      <TransBtn onClick={() => onClickBtn(8)}>카카오맵</TransBtn>
     </ButtonContainer>
   );
 }
