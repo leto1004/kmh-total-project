@@ -1,11 +1,14 @@
 import './App.css';
+import GlobalStyle from './style/GlobalStyle';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import UserStore from './context/UserStore';
 import RoutesCont from './Routes';
 
 function App() {
   return (
-    <UserStore>
+    <>
+      <GlobalStyle />
+      <UserStore>
       <Router>
         <Routes>
           {RoutesCont.map((route, index) => {
@@ -27,6 +30,7 @@ function App() {
         </Routes>
       </Router>
     </UserStore>
+    </>
   );
 }
 

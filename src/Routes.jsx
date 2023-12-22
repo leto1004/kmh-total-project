@@ -14,6 +14,8 @@ import ChatList from './pages/chatting/ChatList';
 import ChatRoomCreate from './pages/chatting/ChatRoomCreate';
 import Chatting from './pages/chatting/Chatting';
 import KakaoMap from './pages/KakaoMap';
+import BloodPieChart from './pages/BloodPieChart';
+import GenderChart from './pages/GenderChat';
 
 const RoutesCont = [
   { path: '/', element: <Login /> },
@@ -34,6 +36,8 @@ const RoutesCont = [
       { path: '/chat-create', element: <ChatRoomCreate /> },
       { path: '/chatting/:roomId', element: <Chatting /> },
       { path: '/kakao', element: <KakaoMap /> },
+      { path: '/blood', element: <BloodPieChart /> },
+      { path: '/gender', element: <GenderChart /> },
     ],
   },
 ];

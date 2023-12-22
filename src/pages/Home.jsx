@@ -29,6 +29,12 @@ const Home = () => {
       case 8:
         navigate("/kakao");
         break;
+      case 9:
+        navigate("/blood");
+        break;
+      case 10:
+        navigate("/gender");
+        break;
       default:
     }
   }
@@ -43,6 +49,8 @@ const Home = () => {
       <TransBtn onClick={() => onClickBtn(6)}>채팅</TransBtn>
       <TransBtn onClick={() => onClickBtn(7)}>공공데이터</TransBtn>
       <TransBtn onClick={() => onClickBtn(8)}>카카오맵</TransBtn>
+      <TransBtn onClick={() => onClickBtn(9)}>파이차트</TransBtn>
+      <TransBtn onClick={() => onClickBtn(10)}>인구</TransBtn>
     </ButtonContainer>
   );
 }
